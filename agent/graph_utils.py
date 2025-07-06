@@ -17,6 +17,8 @@ from graphiti_core.llm_client.openai_client import OpenAIClient
 from graphiti_core.embedder.openai import OpenAIEmbedder, OpenAIEmbedderConfig
 from graphiti_core.cross_encoder.openai_reranker_client import OpenAIRerankerClient
 from dotenv import load_dotenv
+from .ollamaEmbedderConfig import OllamaEmbedderConfig
+from .OllamaEmbedder import OllamaEmbedder
 
 # Load environment variables
 load_dotenv()
@@ -83,19 +85,25 @@ class GraphitiClient:
                 base_url=self.llm_base_url
             )
             
-            # Create OpenAI LLM client
-            llm_client = OpenAIClient(config=llm_config)
+            # # Create OpenAI LLM client
+            llm_client = OpenAIGenericClient(config=llm_config)
             
-            # Create OpenAI embedder
-            embedder = OpenAIEmbedder(
-                config=OpenAIEmbedderConfig(
-                    api_key=self.embedding_api_key,
-                    embedding_model=self.embedding_model,
-                    embedding_dim=self.embedding_dimensions,
-                    base_url=self.embedding_base_url
+            # # Create OpenAI embedder
+            # embedder = OpenAIEmbedder(
+            #     config=OpenAIEmbedderConfig(
+            #         api_key=self.embedding_api_key,
+            #         embedding_model=self.embedding_model,
+            #         embedding_dim=self.embedding_dimensions,
+            #         base_url=self.embedding_base_url
+            #     )
+            # )
+            embedder = OllamaEmbedder(
+                config=OllamaEmbedderConfig(
+                    model="nomic-embed-text",
+                    base_url="http://localhost:11434",
+                    embedding_dim=768
                 )
             )
-            
             # Initialize Graphiti with custom clients
             self.graphiti = Graphiti(
                 self.neo4j_uri,
@@ -329,7 +337,7 @@ class GraphitiClient:
                 base_url=self.llm_base_url
             )
             
-            llm_client = OpenAIClient(config=llm_config)
+            llm_client = OpenAIGenericClient(config=llm_config)
             
             embedder = OpenAIEmbedder(
                 config=OpenAIEmbedderConfig(
